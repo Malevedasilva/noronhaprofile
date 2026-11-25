@@ -1,0 +1,660 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Jose Noronha Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: sticky top bar, then a two-column "console" hero (identity panel + terminal), then stacked terminal windows for each section. */
+:root {
+  --bg: #060a11;
+  --panel: #0b121d;
+  --panel-2: #0f1827;
+  --line: #1b2a3f;
+  --fg: #cbd7e6;
+  --muted: #7a8aa3;
+  --accent: #35f0b0;
+  --accent-dim: #178a69;
+  --warn: #ffb54a;
+  --crit: #ff5c70;
+  --info: #5db8ff;
+  --f-display: 'Chakra Petch', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(53,240,176,0.09) 1px, transparent 0),
+    radial-gradient(ellipse at 85% -10%, rgba(93,184,255,0.10), transparent 55%);
+  background-size: 28px 28px, 100% 100%;
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.6;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  background: var(--bg); z-index: 20;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1120px; margin: 0 auto; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+}
+.topbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding-block: 10px; }
+.brand { font-family: var(--f-mono); font-weight: 700; font-size: 14px; color: var(--fg); display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+.brand b { color: var(--accent); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 rgba(53,240,176,.6); animation: pulse 2.4s infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(53,240,176,0); } 100% { box-shadow: 0 0 0 0 rgba(53,240,176,0); } }
+.nav { display: flex; gap: 4px; overflow-x: auto; flex: 1 1 360px; min-width: 0; order: 3; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); padding: 6px 10px; border-radius: 4px; white-space: nowrap; border: 1px solid transparent; }
+.nav a:hover { color: var(--fg); text-decoration: none; }
+.nav a.on { color: var(--accent); border-color: var(--line); background: var(--panel); }
+.langs { display: flex; gap: 4px; margin-left: auto; }
+.langs button {
+  font-family: var(--f-mono); font-size: 12px; font-weight: 500; color: var(--muted);
+  background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 4px 9px; cursor: pointer;
+}
+.langs button:hover { color: var(--fg); border-color: var(--muted); }
+.langs button[aria-pressed="true"] { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+@media (min-width: 900px) { .nav { order: 0; flex: 1 1 auto; } .langs { margin-left: 0; } }
+
+/* ---------- windows ---------- */
+main { display: flex; flex-direction: column; gap: 28px; padding-block: 28px 56px; }
+.win { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
+.win-bar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 8px 14px; border-bottom: 1px solid var(--line); background: var(--panel-2);
+  font-family: var(--f-mono); font-size: 12px; color: var(--muted); border-radius: 6px 6px 0 0;
+}
+.win-bar .path { color: var(--fg); }
+.win-bar .path i { font-style: normal; color: var(--accent); }
+.win-body { padding: 18px; min-width: 0; }
+h2.title {
+  font-family: var(--f-display); font-weight: 600; font-size: 24px; line-height: 1.2; margin: 0 0 14px; color: #fff; text-wrap: balance;
+}
+h2.title::before { content: "## "; color: var(--accent); font-family: var(--f-mono); font-weight: 500; }
+h3 { font-family: var(--f-display); font-weight: 600; font-size: 17px; margin: 0; color: #fff; line-height: 1.3; }
+p { margin: 0; }
+.mono { font-family: var(--f-mono); }
+.muted { color: var(--muted); }
+
+/* ---------- hero ---------- */
+.hero { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 899px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.id { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 26px 18px 20px; }
+.avatar { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; object-position: center 18%; border: 2px solid var(--accent); box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--accent-dim), 0 0 22px rgba(53,240,176,.35); background: var(--panel-2); }
+.id h1 { font-family: var(--f-display); font-weight: 700; font-size: 30px; line-height: 1.1; margin: 4px 0 0; color: #fff; letter-spacing: .5px; }
+.role { font-family: var(--f-mono); font-size: 14px; color: var(--accent); min-height: 22px; }
+.cursor { animation: blink 1s steps(1) infinite; color: var(--warn); }
+@keyframes blink { 50% { opacity: 0; } }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 4px; }
+.chip { font-family: var(--f-mono); font-size: 11.5px; border: 1px solid var(--line); background: var(--panel-2); color: var(--fg); padding: 3px 9px; border-radius: 4px; }
+.socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 6px; }
+.socials a { font-family: var(--f-mono); font-size: 12px; color: var(--muted); border: 1px solid var(--line); padding: 5px 10px; border-radius: 4px; }
+.socials a:hover { color: var(--bg); background: var(--accent); border-color: var(--accent); text-decoration: none; }
+.btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-mono); font-size: 13px; font-weight: 700; color: var(--bg); background: var(--accent); border: 1px solid var(--accent); padding: 9px 16px; border-radius: 4px; margin-top: 8px; }
+.btn:hover { text-decoration: none; background: #5bffc6; }
+
+.term .ln { font-family: var(--f-mono); font-size: 13px; color: var(--muted); margin: 0 0 8px; overflow-wrap: anywhere; }
+.term .ln + .out { margin-top: 0; }
+.ps { color: var(--accent); }
+.ps2 { color: var(--info); }
+.out { color: var(--fg); max-width: 72ch; margin-bottom: 20px; }
+.out:last-child { margin-bottom: 0; }
+.kv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; margin-bottom: 20px; }
+@media (max-width: 640px) { .kv { grid-template-columns: minmax(0, 1fr); } }
+.kv div { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 14px; min-width: 0; }
+.kv dt { font-family: var(--f-mono); font-size: 12px; color: var(--muted); min-width: 92px; padding-top: 2px; }
+.kv dd { margin: 0; color: var(--fg); overflow-wrap: anywhere; min-width: 0; }
+.kv { margin-top: 0; }
+
+/* ---------- skills ---------- */
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 36px; }
+@media (max-width: 720px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+.lead { max-width: 78ch; margin-bottom: 22px; color: var(--fg); }
+.skill .head { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 13px; margin-bottom: 7px; }
+.skill .head b { color: var(--accent); font-weight: 500; font-variant-numeric: tabular-nums; }
+.meter { height: 12px; background: repeating-linear-gradient(90deg, var(--line) 0 7px, transparent 7px 10px); }
+.meter i {
+  display: block; height: 100%; width: var(--v);
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 7px, transparent 7px 10px);
+  mask: repeating-linear-gradient(90deg, #000 0 7px, transparent 7px 10px);
+  animation: fill 1.1s ease-out;
+}
+@keyframes fill { from { width: 0; } }
+.toolkit { margin-top: 26px; padding-top: 18px; border-top: 1px dashed var(--line); }
+.toolkit .lbl { font-family: var(--f-mono); font-size: 12px; color: var(--muted); margin-bottom: 10px; display: block; }
+.toolkit .chips { justify-content: flex-start; }
+
+/* ---------- log timeline ---------- */
+.log { display: flex; flex-direction: column; }
+.entry { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 6px 22px; padding: 16px 0; border-top: 1px dashed var(--line); }
+.entry:first-child { border-top: 0; padding-top: 0; }
+.entry:last-child { padding-bottom: 0; }
+@media (max-width: 640px) { .entry { grid-template-columns: minmax(0, 1fr); } }
+.when { font-family: var(--f-mono); font-size: 12.5px; color: var(--warn); font-variant-numeric: tabular-nums; padding-top: 3px; }
+.entry ul { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.entry li { position: relative; padding-left: 18px; }
+.entry li::before { content: ">"; position: absolute; left: 0; color: var(--accent); font-family: var(--f-mono); }
+.sub { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.live { font-family: var(--f-mono); font-size: 11px; color: var(--accent); border: 1px solid var(--accent-dim); padding: 1px 7px; border-radius: 3px; margin-left: 8px; vertical-align: 2px; }
+
+/* ---------- certs ---------- */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.card .yr { font-family: var(--f-mono); font-size: 12px; color: var(--info); font-variant-numeric: tabular-nums; }
+.card p { font-size: 14.5px; color: var(--fg); overflow-wrap: anywhere; }
+.card.cv { border-color: var(--accent-dim); }
+.card.cv a:not(.dl) { font-family: var(--f-display); font-weight: 600; font-size: 16px; }
+.card .dl { margin-top: auto; align-self: flex-start; font-family: var(--f-mono); font-size: 12px; color: var(--accent); border: 1px solid var(--accent-dim); border-radius: 4px; padding: 5px 11px; }
+.card .dl::before { content: "↓ "; }
+.card .dl:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); text-decoration: none; }
+
+/* ---------- contact ---------- */
+.rows { display: flex; flex-direction: column; }
+.row { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; padding: 12px 0; border-top: 1px dashed var(--line); }
+.row:first-child { border-top: 0; }
+@media (max-width: 560px) { .row { grid-template-columns: minmax(0, 1fr) auto; } .row .k { grid-column: 1 / -1; } }
+.row .k { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.row .v { overflow-wrap: anywhere; min-width: 0; user-select: all; }
+.cp { font-family: var(--f-mono); font-size: 11.5px; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+.cp:hover { border-color: var(--accent); color: var(--accent); }
+
+footer { border-top: 1px solid var(--line); padding-block: 18px; font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .dot, .cursor, .meter i { animation: none; }
+}
+</style>
+
+<div class="topbar gutter">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span><span><b>jnoronha</b>@sec-ops</span></div>
+    <nav class="nav" id="nav" aria-label="Sections">
+      <a href="#about" class="on" data-i18n="nav_about">About</a>
+      <a href="#skills" data-i18n="nav_skills">Skills</a>
+      <a href="#experience" data-i18n="nav_experience">Experience</a>
+      <a href="#education" data-i18n="nav_education">Education</a>
+      <a href="#certs" data-i18n="nav_certs">Certifications</a>
+      <a href="#contact" data-i18n="nav_contact">Contact</a>
+    </nav>
+    <div class="langs" id="langs" role="group" aria-label="Language">
+      <button type="button" data-lang="en" title="English">EN</button>
+      <button type="button" data-lang="pt" title="Português">PT</button>
+      <button type="button" data-lang="id" title="Indonesia">ID</button>
+      <button type="button" data-lang="tl" title="Tetum">TL</button>
+    </div>
+  </div>
+</div>
+
+<div class="gutter">
+<main class="wrap">
+
+  <!-- HERO -->
+  <section id="about" class="hero">
+    <aside class="win id">
+      <img class="avatar" src="data:image/jpeg;base64,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" alt="José Noronha" width="150" height="150">
+      <h1>José Noronha</h1>
+      <div class="role"><span id="typed-role">IT Officer</span><span class="cursor">_</span></div>
+      <div class="chips">
+        <span class="chip">Dili, Timor-Leste</span>
+        <span class="chip">CCNA</span>
+        <span class="chip">CWNA</span>
+      </div>
+      <a class="btn" href="assets/cv/CV_Jose Armindo Noronha.pdf" download><span data-i18n="cv_link">Download My CV</span></a>
+      <div class="socials">
+        <a href="https://www.linkedin.com/in/jose-noronha-3b6b41374/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Malevedasilva" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.facebook.com/share/18uUchraYg/?mibextid=wwXIfr" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.instagram.com/jose_noronha20?igsh=eDc3dXJvbTM2djB0&amp;utm_source=qr" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://wa.me/+67074438962" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </aside>
+
+    <div class="win term">
+      <div class="win-bar"><span class="path"><i>~</i>/about</span><span>tty1 · secure</span></div>
+      <div class="win-body">
+        <p class="ln"><span class="ps">maleve</span>:<span class="ps2">~</span>$ whoami</p>
+        <p class="out"><strong style="color:#fff">José Armindo Soares da Silva Noronha</strong> <span class="muted">· <span data-i18n="value_degree">Bachelor of Computer Science</span></span></p>
+
+        <p class="ln"><span class="ps">maleve</span>:<span class="ps2">~</span>$ cat intro.md</p>
+        <p class="out" data-i18n="about_intro">Introduction, my name is Jose Armindo Soares da Silva Noronha. I have a degree in IT Computer Science from DIT University. Through my letter to apply for a position at IT Officer, I found out the information via social media. To develop communication and leadership skills, while studying at DIT I actively followed the staff there to improve the internet network at DIT and helped them to create websites, and then I once did an internship at Metrolink company and there my friend repaired internet network for clients there, I also repaired their computers, reinstalled them. Even though I am still a fresh graduate, I am sure that the skills and experience that I have can make a positive contribution to this company. As a consideration, I am attaching the latest CV and portfolio. If you have any questions, please contact me via this email. I hope I can explain more about myself.</p>
+
+        <p class="ln"><span class="ps">maleve</span>:<span class="ps2">~</span>$ cat profile.conf</p>
+        <dl class="kv">
+          <div><dt data-i18n="label_birthday">Birthday:</dt><dd>20 October 2000</dd></div>
+          <div><dt data-i18n="label_age">Age:</dt><dd>26</dd></div>
+          <div><dt data-i18n="label_city">City:</dt><dd>Dili, Timor-Leste</dd></div>
+          <div><dt data-i18n="label_degree">Degree:</dt><dd data-i18n="value_degree">Bachelor of Computer Science</dd></div>
+          <div><dt data-i18n="label_phone">Phone:</dt><dd>+670 74438962</dd></div>
+          <div><dt data-i18n="label_email">Email:</dt><dd>josearmindonoronha@gmail.com</dd></div>
+        </dl>
+
+        <p class="ln"><span class="ps">maleve</span>:<span class="ps2">~</span>$ cat summary.txt</p>
+        <p class="out" data-i18n="resume_summary_text">Through the technology skills I have, I can solve computer equipment problems that I encounter. I am an organized and responsible person, so I handle projects and problems with patience and skill.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="win">
+    <div class="win-bar"><span class="path"><i>~</i>/skills</span><span>scan --coverage</span></div>
+    <div class="win-body">
+      <h2 class="title" data-i18n="skills_title">Skills</h2>
+      <p class="lead" data-i18n="skills_desc">To develop communication and leadership skills, while studying at DIT I actively accompanied the staff there to improve the internet network at DIT and help them create websites, and then once I did an internship at Metrolink and there my colleague repaired the internet network for the customers there, I also repaired their computers, reinstalled them, and also created systems for companies and helped colleagues fix people's systems that had failed with some error.</p>
+      <div class="grid2">
+        <div class="skill"><div class="head"><span data-i18n="skill_software">Software</span><b>80%</b></div><div class="meter" style="--v:80%"><i></i></div></div>
+        <div class="skill"><div class="head"><span data-i18n="skill_networking">Networking</span><b>75%</b></div><div class="meter" style="--v:75%"><i></i></div></div>
+        <div class="skill"><div class="head"><span data-i18n="skill_hardware">Hardware</span><b>70%</b></div><div class="meter" style="--v:70%"><i></i></div></div>
+        <div class="skill"><div class="head"><span data-i18n="skill_webdev">Web development</span><b>60%</b></div><div class="meter" style="--v:60%"><i></i></div></div>
+      </div>
+      <div class="toolkit">
+        <span class="lbl" data-i18n="toolkit_title">Toolkit</span>
+        <div class="chips">
+          <span class="chip">Routers</span><span class="chip">MLS Switches</span><span class="chip">Access Points</span>
+          <span class="chip">CCTV</span><span class="chip">VOIP</span><span class="chip">Control Domain </span>
+          <span class="chip">Cisco</span><span class="chip">Juniper BGP</span><span class="chip">Cyber Security</span>
+          <span class="chip">developer frontend</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="win">
+    <div class="win-bar"><span class="path"><i>~</i>/experience</span><span>tail -f work.log</span></div>
+    <div class="win-body">
+      <h2 class="title" data-i18n="exp_title">Professional Experience</h2>
+      <div class="log">
+        <div class="entry">
+          <div class="when">2025 – <span data-i18n="present">Present</span></div>
+          <div>
+            <h3>TIC Timor, I.P. <span class="live">LIVE</span></h3>
+            <ul>
+              <li data-i18n="exp_tic1">Monitoring connectivity for the municipality and HQ of TIC Timor.</li>
+              <li data-i18n="exp_tic2">Configure network devices: routers, switches (MLS), and access points.</li>
+              <li data-i18n="exp_tic3">Join PCs and laptops to the domain in the municipality and HQ of TIC Timor.</li>
+              <li data-i18n="exp_tic4">Set up CCTV, PCs, laptops, and VOIP at TIC Timor HQ.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="when"> 2024</div>
+          <div>
+            <h3>Ministry of State Administration</h3>
+            <ul><li data-i18n="exp_msa">Technical support in the Nain-Feto administrative post.</li></ul>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="when">2023 – 2024</div>
+          <div>
+            <h3>Ministry of Commerce and Industry</h3>
+            <ul><li data-i18n="exp_mci">Internship at the MCI office as IT Support.</li></ul>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="when">2023</div>
+          <div>
+            <h3>Metrolink</h3>
+            <ul><li data-i18n="exp_metrolink">Set up an internet network and distributed it to customers.</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education" class="win">
+    <div class="win-bar"><span class="path"><i>~</i>/education</span><span>ls -l</span></div>
+    <div class="win-body">
+      <h2 class="title" data-i18n="edu_title">Education</h2>
+      <div class="log">
+        <div class="entry">
+          <div class="when">2019 – 2023</div>
+          <div>
+            <h3 data-i18n="edu_bachelor">Bachelor in Computer Science, Dili Institute Of Technology</h3>
+            <p class="sub" data-i18n="edu_dit_loc">Dili Institute of Technology, Timor-Leste, TL</p>
+            <p style="margin-top:8px" data-i18n="edu_dit_desc">I graduated from Dili Institute of Technology majoring in Computer Science with a concentration in information systems in 2023.</p>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="when">2016 – 2018</div>
+          <div>
+            <h3 data-i18n="edu_senior">Senior High School, Colégio Paulo VI</h3>
+            <p class="sub" data-i18n="edu_colegio_loc">Colégio Paulo VI, Timor-Leste, TL</p>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="when">2013 – 2015</div>
+          <div>
+            <h3 data-i18n="edu_junior">Junior High School, Colégio Paulo VI</h3>
+            <p class="sub" data-i18n="edu_colegio_loc">Colégio Paulo VI, Timor-Leste, TL</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTS -->
+  <section id="certs" class="win">
+    <div class="win-bar"><span class="path"><i>~</i>/certifications</span><span>ls training/</span></div>
+    <div class="win-body">
+      <h2 class="title" data-i18n="certs_title">Certifications</h2>
+      <p class="lead" data-i18n="certs_desc">Courses and technical training I completed during my learning and professional development.</p>
+      <div class="cards">
+        <div class="card"><span class="yr">2025</span><p >CCNA and CWNA — Trainocate, ID</p><a class="dl" href="assets/certificates/sertifikat-1.pdf" download><span data-i18n="cert_dl">Download certificate</span></a></div>
+        <div class="card"><span class="yr">2025</span><p >How to Make Proxmox Server Anti-Down - ID-Networkers, IDN</p><a class="dl" href="assets/certificates/sertifikat-2.pdf" download><span data-i18n="cert_dl">Download certificate</span></a></div>
+        <div class="card"><span class="yr">2025</span><p >Basic BGP on Juniper — ID-Networkers, IDN</p><a class="dl" href="assets/certificates/sertifikat-3.pdf" download><span data-i18n="cert_dl">Download certificate</span></a></div>
+        <div class="card"><span class="yr">2025</span><p >Basic Cisco — ID-Networkers, IDN</p><a class="dl" href="assets/certificates/sertifikat-4.pdf" download><span data-i18n="cert_dl">Download certificate</span></a></div>
+        <div class="card"><span class="yr">2025</span><p >Basic Cyber Security, TL</p><a class="dl" href="assets/certificates/sertifikat-5.pdf" download><span data-i18n="cert_dl">Download certificate</span></a></div>
+        <div class="card"><span class="yr">2026</span><p >Implementation digital health</p><a class="dl" href="assets/certificates/sertifikat-6.pdf" download><span data-i18n="cert_dl">Download certificate</span></a></div>
+     
+        <div class="card cv">
+          <span class="yr">PDF</span>
+          <a href="assets/cv/CV_Jose Armindo Noronha.pdf" download data-i18n="cv_link">Download My CV</a>
+          <p class="muted" data-i18n="cv_desc">Download my complete CV in PDF format to view my work experience and educational background in detail.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="win">
+    <div class="win-bar"><span class="path"><i>~</i>/contact</span><span>connect --secure</span></div>
+    <div class="win-body">
+      <h2 class="title" data-i18n="contact_title">Contact</h2>
+      <p class="lead" data-i18n="contact_desc">Even though I am still a fresh graduate, I am sure that the skills and experience that I have can make a positive contribution to this company. If you have any questions, please contact me via this email.</p>
+      <div class="rows">
+        <div class="row"><span class="k" data-i18n="contact_location_label">Location:</span><span class="v"><a href="https://www.google.com/maps/search/?api=1&amp;query=Bidau+Lecidere%2C+Dili%2C+Timor-Leste" target="_blank" rel="noopener">BIDAU-LECIDERE, Dili</a></span><span></span></div>
+        <div class="row"><span class="k" data-i18n="contact_email_label">Email:</span><span class="v mono" id="v-email">josearmindonoronha@gmail.com</span><button class="cp" type="button" data-copy="v-email"><span data-i18n="copy">Copy</span></button></div>
+        <div class="row"><span class="k" data-i18n="contact_call_label">Call:</span><span class="v mono" id="v-phone">+670 74438962</span><button class="cp" type="button" data-copy="v-phone"><span data-i18n="copy">Copy</span></button></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<footer class="gutter">
+  <div class="wrap"><span>&copy; José Noronha</span><span>Dili, Timor-Leste</span></div>
+</footer>
+
+<script>
+(function () {
+  var T = {
+    en: {
+      nav_about: "About", nav_skills: "Skills", nav_experience: "Experience", nav_education: "Education", nav_certs: "Certifications", nav_contact: "Contact",
+      cv_link: "Download My CV",
+      cv_desc: "Download my complete CV in PDF format to view my work experience and educational background in detail.",
+      about_intro: "Introduction, my name is Jose Armindo Soares da Silva Noronha. I have a degree in IT Computer Science from DIT University. Through my letter to apply for a position at IT Officer, I found out the information via social media. To develop communication and leadership skills, while studying at DIT I actively followed the staff there to improve the internet network at DIT and helped them to create websites, and then I once did an internship at Metrolink company and there my friend repaired internet network for clients there, I also repaired their computers, reinstalled them. Even though I am still a fresh graduate, I am sure that the skills and experience that I have can make a positive contribution to this company. As a consideration, I am attaching the latest CV and portfolio. If you have any questions, please contact me via this email. I hope I can explain more about myself.",
+      label_birthday: "birthday", label_age: "age", label_city: "city", label_degree: "degree", label_phone: "phone", label_email: "email",
+      value_degree: "Bachelor of Computer Science",
+      resume_summary_text: "Through the technology skills I have, I can solve computer equipment problems that I encounter, and as an IT student (Informatics Technology), I want to learn new experiences and gain new knowledge from my fellow students and at work. I am an organized and responsible person, so I handle the projects or problems that I encounter with patience and skill.",
+      skills_title: "Skills",
+      skills_desc: "To develop communication and leadership skills, while studying at DIT I actively accompanied the staff there to improve the internet network at DIT and help them create websites, and then once I did an internship at Metrolink and there my colleague repaired the internet network for the customers there, I also repaired their computers, reinstalled them, and also created systems for companies and helped colleagues fix people's systems that had failed with some error.",
+      skill_software: "Software", skill_networking: "Networking", skill_hardware: "Hardware", skill_webdev: "Web development",
+      toolkit_title: "toolkit --list",
+      exp_title: "Professional Experience", present: "Present",
+      exp_tic1: "Monitoring connectivity for the municipality and HQ of TIC Timor.",
+      exp_tic2: "Configure network devices: routers, switches (MLS), and access points.",
+      exp_tic3: "Join PCs and laptops to the domain in the municipality and HQ of TIC Timor.",
+      exp_tic4: "Set up CCTV, PCs, laptops, and VOIP at TIC Timor HQ.",
+      exp_msa: "Technical support in the Nain-Feto administrative post: set up network, printers, and computers in the six sucos under the administrative post.",
+      exp_mci: "Internship at the MCI office as IT Support: CCTV setup and configuring printers, PCs, and laptops.",
+      exp_metrolink: "Set up an internet network and distributed it to customers. Installed computers and repaired printers at Metrolink in 2023 for 6 months.",
+      edu_title: "Education",
+      edu_junior: "Junior High School, Colégio Paulo VI", edu_senior: "Senior High School, Colégio Paulo VI",
+      edu_colegio_loc: "Colégio Paulo VI, Timor-Leste, TL",
+      edu_bachelor: "Bachelor in Computer Science, Dili Institute Of Technology",
+      edu_dit_loc: "Dili Institute of Technology, Timor-Leste, TL",
+      edu_dit_desc: "I graduated from Dili Institute of Technology majoring in Computer Science with a concentration in information systems in 2023.",
+      certs_title: "Certifications",
+      certs_desc: "Courses and technical training I completed during my learning and professional development.",
+      course_1: "Basic Software, Hardware and Networking — Grace For Development, TL",
+      course_2: "Basic Cisco — ID-Networkers, IDN",
+      course_3: "Basic Cyber Security — ID-Networkers, IDN",
+      course_4: "Basic BGP on Juniper — ID-Networkers, IDN",
+      course_5: "NTT Data and Cisco, TL",
+      course_6: "CCNA and CWNA — Trainocate, ID",
+      contact_title: "Contact",
+      contact_desc: "Even though I am still a fresh graduate, I am sure that the skills and experience that I have can make a positive contribution to this company. If you have any questions, please contact me via this email. I hope I can explain more about myself.",
+      contact_location_label: "location", contact_email_label: "email", contact_call_label: "phone",
+      cert_dl: "Download certificate",
+      copy: "Copy", copied: "Copied"
+    },
+    pt: {
+      nav_about: "Sobre", nav_skills: "Competências", nav_experience: "Experiência", nav_education: "Educação", nav_certs: "Certificações", nav_contact: "Contacto",
+      cv_link: "Descarregar o meu CV",
+      cv_desc: "Descarregue o meu CV completo em formato PDF para ver em detalhe a minha experiência profissional e formação académica.",
+      about_intro: "Introdução, o meu nome é Jose Armindo Soares da Silva Noronha. Sou licenciado em Ciência da Computação (TI) pela Universidade DIT. Através da minha carta de candidatura para a posição de Técnico de TI, tomei conhecimento da vaga através das redes sociais. Para desenvolver competências de comunicação e liderança, enquanto estudava na DIT acompanhei ativamente a equipa técnica na melhoria da rede de internet da instituição e ajudei-os a criar websites, e mais tarde fiz um estágio na empresa Metrolink, onde o meu colega reparava a rede de internet dos clientes e eu também reparava e reinstalava os computadores deles. Apesar de ser ainda um recém-licenciado, tenho a certeza de que as competências e a experiência que possuo podem contribuir positivamente para esta empresa. Como referência, anexo o meu currículo e portefólio mais recentes. Se tiver alguma questão, por favor contacte-me através deste email. Espero poder explicar mais sobre mim.",
+      label_birthday: "nascimento", label_age: "idade", label_city: "cidade", label_degree: "formação", label_phone: "telefone", label_email: "email",
+      value_degree: "Licenciatura em Ciência da Computação",
+      resume_summary_text: "Através das competências tecnológicas que possuo, consigo resolver problemas de equipamentos informáticos que encontro, e como estudante de TI (Tecnologia da Informática), quero aprender novas experiências e adquirir novos conhecimentos com colegas e no trabalho. Sou uma pessoa organizada e responsável, por isso trato os projetos ou problemas que encontro com paciência e competência.",
+      skills_title: "Competências",
+      skills_desc: "Para desenvolver competências de comunicação e liderança, enquanto estudava na DIT acompanhei ativamente a equipa técnica na melhoria da rede de internet da instituição e ajudei a criar websites; mais tarde, durante o estágio na Metrolink, o meu colega reparava a rede de internet dos clientes e eu também reparava e reinstalava os computadores. Também criei sistemas para empresas e ajudei colegas a corrigir sistemas com erros.",
+      skill_software: "Software", skill_networking: "Redes", skill_hardware: "Hardware", skill_webdev: "Desenvolvimento web",
+      toolkit_title: "toolkit --list",
+      exp_title: "Experiência Profissional", present: "Presente",
+      exp_tic1: "Monitorização da conetividade do município e da sede da TIC Timor.",
+      exp_tic2: "Configuração de dispositivos de rede: routers, switches (MLS) e access points.",
+      exp_tic3: "Integração de PCs e portáteis no domínio, no município e na sede da TIC Timor.",
+      exp_tic4: "Instalação de CCTV, PCs, portáteis e VOIP na sede da TIC Timor.",
+      exp_msa: "Suporte técnico no posto administrativo de Nain-Feto: instalação de rede, impressoras e computadores nos seis sucos do posto administrativo.",
+      exp_mci: "Estágio no gabinete do MCI como Suporte de TI: instalação de CCTV e configuração de impressoras, PCs e portáteis.",
+      exp_metrolink: "Instalação e distribuição de rede de internet para clientes. Instalação de computadores e reparação de impressoras na Metrolink em 2023, durante 6 meses.",
+      edu_title: "Educação",
+      edu_junior: "Ensino Básico, Colégio Paulo VI", edu_senior: "Ensino Secundário, Colégio Paulo VI",
+      edu_colegio_loc: "Colégio Paulo VI, Timor-Leste, TL",
+      edu_bachelor: "Licenciatura em Ciência da Computação, Dili Institute Of Technology",
+      edu_dit_loc: "Dili Institute of Technology, Timor-Leste, TL",
+      edu_dit_desc: "Formei-me no Dili Institute of Technology em Ciência da Computação, com especialização em sistemas de informação, em 2023.",
+      certs_title: "Certificações",
+      certs_desc: "Cursos e formações técnicas que concluí ao longo do meu percurso de aprendizagem e desenvolvimento profissional.",
+      course_1: "Software, Hardware e Redes Básicas — Grace For Development, TL",
+      course_2: "Cisco Básico — ID-Networkers, IDN",
+      course_3: "Cibersegurança Básica — ID-Networkers, IDN",
+      course_4: "BGP Básico em Juniper — ID-Networkers, IDN",
+      course_5: "NTT Data e Cisco, TL",
+      course_6: "CCNA e CWNA — Trainocate, ID",
+      contact_title: "Contacto",
+      contact_desc: "Apesar de ser ainda um recém-licenciado, tenho a certeza de que as competências e a experiência que possuo podem contribuir positivamente para esta empresa. Se tiver alguma questão, por favor contacte-me através deste email. Espero poder explicar mais sobre mim.",
+      contact_location_label: "localização", contact_email_label: "email", contact_call_label: "telefone",
+      cert_dl: "Descarregar certificado",
+      copy: "Copiar", copied: "Copiado"
+    },
+    id: {
+      nav_about: "Tentang", nav_skills: "Keahlian", nav_experience: "Pengalaman", nav_education: "Pendidikan", nav_certs: "Sertifikasi", nav_contact: "Kontak",
+      cv_link: "Unduh CV Saya",
+      cv_desc: "Unduh CV lengkap saya dalam format PDF untuk melihat detail pengalaman kerja dan latar belakang pendidikan saya.",
+      about_intro: "Perkenalan, nama saya Jose Armindo Soares da Silva Noronha. Saya lulusan Ilmu Komputer (TI) dari Universitas DIT. Melalui surat lamaran untuk posisi Staf IT, saya mengetahui informasi lowongan tersebut melalui media sosial. Untuk mengembangkan kemampuan komunikasi dan kepemimpinan, selama kuliah di DIT saya aktif mendampingi staf di sana untuk meningkatkan jaringan internet kampus dan membantu mereka membuat website. Kemudian saya pernah magang di perusahaan Metrolink, di mana rekan saya memperbaiki jaringan internet untuk pelanggan, dan saya juga memperbaiki serta menginstal ulang komputer mereka. Meskipun saya masih lulusan baru, saya yakin keterampilan dan pengalaman yang saya miliki dapat memberikan kontribusi positif bagi perusahaan ini. Sebagai bahan pertimbangan, saya melampirkan CV dan portofolio terbaru saya. Jika ada pertanyaan, silakan hubungi saya melalui email ini. Saya berharap dapat menjelaskan lebih lanjut tentang diri saya.",
+      label_birthday: "lahir", label_age: "usia", label_city: "kota", label_degree: "gelar", label_phone: "telepon", label_email: "email",
+      value_degree: "Sarjana Ilmu Komputer",
+      resume_summary_text: "Dengan kemampuan teknologi yang saya miliki, saya dapat menyelesaikan masalah perangkat komputer yang saya temui, dan sebagai mahasiswa TI (Teknologi Informatika), saya ingin terus belajar pengalaman baru dan mendapatkan pengetahuan baru dari sesama mahasiswa maupun di tempat kerja. Saya orang yang terorganisir dan bertanggung jawab, sehingga proyek atau masalah yang saya temui saya tangani dengan sabar dan terampil.",
+      skills_title: "Keahlian",
+      skills_desc: "Untuk mengembangkan kemampuan komunikasi dan kepemimpinan, selama kuliah di DIT saya aktif mendampingi staf di sana untuk meningkatkan jaringan internet kampus dan membantu membuat website. Kemudian saat magang di Metrolink, rekan saya memperbaiki jaringan internet pelanggan dan saya juga memperbaiki serta menginstal ulang komputer mereka, selain itu saya juga membuat sistem untuk perusahaan dan membantu rekan kerja memperbaiki sistem yang mengalami error.",
+      skill_software: "Software", skill_networking: "Jaringan", skill_hardware: "Hardware", skill_webdev: "Pengembangan web",
+      toolkit_title: "toolkit --list",
+      exp_title: "Pengalaman Profesional", present: "Sekarang",
+      exp_tic1: "Memantau konektivitas di kabupaten/kota dan kantor pusat TIC Timor.",
+      exp_tic2: "Mengonfigurasi perangkat jaringan: router, switch (MLS), dan access point.",
+      exp_tic3: "Menggabungkan PC dan laptop ke domain di kabupaten/kota dan kantor pusat TIC Timor.",
+      exp_tic4: "Memasang CCTV, PC, laptop, dan VOIP di kantor pusat TIC Timor.",
+      exp_msa: "Dukungan teknis di pos administratif Nain-Feto: memasang jaringan, printer, dan komputer di enam suco di bawah pos administratif tersebut.",
+      exp_mci: "Magang di kantor MCI sebagai IT Support: pemasangan CCTV serta pengaturan printer, PC, dan laptop.",
+      exp_metrolink: "Memasang jaringan internet dan mendistribusikannya ke pelanggan. Instalasi komputer dan perbaikan printer di Metrolink pada tahun 2023 selama 6 bulan.",
+      edu_title: "Pendidikan",
+      edu_junior: "SMP Colégio Paulo VI", edu_senior: "SMA Colégio Paulo VI",
+      edu_colegio_loc: "Colégio Paulo VI, Timor-Leste, TL",
+      edu_bachelor: "Sarjana Ilmu Komputer, Dili Institute Of Technology",
+      edu_dit_loc: "Dili Institute of Technology, Timor-Leste, TL",
+      edu_dit_desc: "Saya lulus dari Dili Institute of Technology jurusan Ilmu Komputer dengan konsentrasi sistem informasi pada tahun 2023.",
+      certs_title: "Sertifikasi",
+      certs_desc: "Kursus dan pelatihan teknis yang saya selesaikan selama perjalanan belajar dan pengembangan profesional saya.",
+      course_1: "Dasar Software, Hardware, dan Jaringan — Grace For Development, TL",
+      course_2: "Cisco Dasar — ID-Networkers, IDN",
+      course_3: "Cyber Security Dasar — ID-Networkers, IDN",
+      course_4: "BGP Dasar pada Juniper — ID-Networkers, IDN",
+      course_5: "NTT Data dan Cisco, TL",
+      course_6: "CCNA dan CWNA — Trainocate, ID",
+      contact_title: "Kontak",
+      contact_desc: "Meskipun saya masih lulusan baru, saya yakin keterampilan dan pengalaman yang saya miliki dapat memberikan kontribusi positif bagi perusahaan ini. Jika ada pertanyaan, silakan hubungi saya melalui email ini. Saya berharap dapat menjelaskan lebih lanjut tentang diri saya.",
+      contact_location_label: "lokasi", contact_email_label: "email", contact_call_label: "telepon",
+      cert_dl: "Unduh sertifikat",
+      copy: "Salin", copied: "Tersalin"
+    },
+    tl: {
+      nav_about: "Kona-ba", nav_skills: "Abilidade", nav_experience: "Esperiénsia", nav_education: "Edukasaun", nav_certs: "Sertifikasaun", nav_contact: "Kontaktu",
+      cv_link: "Download CV Ha'u nian",
+      cv_desc: "Download CV kompletu ha'u nian iha formatu PDF atu haree ho detallu esperiénsia servisu no background edukasaun ha'u nian.",
+      about_intro: "Introdusaun, naran ha'u nian mak Jose Armindo Soares da Silva Noronha. Ha'u iha grau ba Siénsia Komputadór (TI) husi Universidade DIT. Liuhusi karta aplikasaun ba pozisaun IT Officer, ha'u hetan informasaun liuhusi rede sosiál. Atu dezenvolve kapasidade komunikasaun no lideransa, durante estuda iha DIT, ha'u tuir aktivamente ekipa téknika ne'ebé hadi'a rede internet iha DIT no ajuda sira atu kria website. Depois ha'u halo estágiu iha kompañia Metrolink, iha ne'ebá kolega ha'u nian hadi'a rede internet ba klienti sira, no ha'u mós hadi'a no instala fila fali komputadór sira nian. Maski ha'u sei mos gradua, ha'u fiar katak abilidade no esperiénsia ne'ebé ha'u iha bele kontribui pozitivamente ba kompañia ida-ne'e. Nu'udar konsiderasaun, ha'u anexa CV no portefóliu foun ha'u nian. Se iha pergunta ruma, favór kontaktu ha'u liuhusi email ida-ne'e. Ha'u hein katak bele esplika liu tan kona-ba ha'u-nia an rasik.",
+      label_birthday: "loron moris", label_age: "idade", label_city: "sidade", label_degree: "grau", label_phone: "telefone", label_email: "email",
+      value_degree: "Bacharelato iha Siénsia Komputadór",
+      resume_summary_text: "Liuhusi abilidade teknolojia ne'ebé ha'u iha, ha'u bele rezolve problema ekipamentu komputadór ne'ebé ha'u hasoru, no nu'udar estudante TI (Tecnolojia Informátika), ha'u hakarak aprende esperiénsia foun no hetan koñesimentu foun husi kolega estudante no iha serbisu. Ha'u ema organizadu no responsável, entaun ha'u trata projetu ka problema ne'ebé ha'u hasoru ho pasiénsia no abilidade.",
+      skills_title: "Abilidade",
+      skills_desc: "Atu dezenvolve kapasidade komunikasaun no lideransa, durante estuda iha DIT ha'u tuir aktivamente ekipa téknika ne'ebé hadi'a rede internet iha DIT no ajuda kria website. Depois durante estágiu iha Metrolink, kolega ha'u nian hadi'a rede internet ba klienti sira, no ha'u mós hadi'a no instala fila fali komputadór sira, no mós kria sistema ba kompañia sira no ajuda kolega sira hadi'a sistema ne'ebé iha error.",
+      skill_software: "Software", skill_networking: "Redes", skill_hardware: "Hardware", skill_webdev: "Dezenvolvimentu web",
+      toolkit_title: "toolkit --list",
+      exp_title: "Esperiénsia Profisionál", present: "Agora",
+      exp_tic1: "Monitoriza konetividade ba munisípiu no HQ TIC Timor.",
+      exp_tic2: "Konfigura ekipamentu rede: router, switch (MLS), no access point.",
+      exp_tic3: "Tama PC no laptop ba domain iha munisípiu no HQ TIC Timor.",
+      exp_tic4: "Instala CCTV, PC, laptop, no VOIP iha HQ TIC Timor.",
+      exp_msa: "Suporte téknika iha postu administrativu Nain-Feto: instala rede, printer, no komputadór iha suku neen ne'ebé pertense ba postu administrativu ne'e.",
+      exp_mci: "Estágiu iha eskritóriu MCI nu'udar IT Support: instalasaun CCTV no konfigura printer, PC, no laptop.",
+      exp_metrolink: "Instala rede internet no distribui ba klienti sira. Instalasaun komputadór no hadi'a printer iha Metrolink iha 2023 durante fulan 6.",
+      edu_title: "Edukasaun",
+      edu_junior: "Enzinu Baziku, Colégio Paulo VI", edu_senior: "Enzinu Sekundáriu, Colégio Paulo VI",
+      edu_colegio_loc: "Colégio Paulo VI, Timor-Leste, TL",
+      edu_bachelor: "Bacharelato iha Siénsia Komputadór, Dili Institute Of Technology",
+      edu_dit_loc: "Dili Institute of Technology, Timor-Leste, TL",
+      edu_dit_desc: "Ha'u gradua husi Dili Institute of Technology iha area Siénsia Komputadór ho konsentrasaun sistema informasaun iha tinan 2023.",
+      certs_title: "Sertifikasaun",
+      certs_desc: "Kursu no formasaun téknika ne'ebé ha'u kompleta durante prosesu aprendizajen no dezenvolvimentu profisionál.",
+      course_1: "Software, Hardware no Redes Báziku — Grace For Development, TL",
+      course_2: "Cisco Báziku — ID-Networkers, IDN",
+      course_3: "Cyber Security Báziku — ID-Networkers, IDN",
+      course_4: "BGP Báziku iha Juniper — ID-Networkers, IDN",
+      course_5: "NTT Data no Cisco, TL",
+      course_6: "CCNA no CWNA — Trainocate, ID",
+      contact_title: "Kontaktu",
+      contact_desc: "Maski ha'u sei mos gradua, ha'u fiar katak abilidade no esperiénsia ne'ebé ha'u iha bele kontribui pozitivamente ba kompañia ida-ne'e. Se iha pergunta ruma, favór kontaktu ha'u liuhusi email ida-ne'e. Ha'u hein katak bele esplika liu tan kona-ba ha'u-nia an rasik.",
+      contact_location_label: "lokalizasaun", contact_email_label: "email", contact_call_label: "telefone",
+      cert_dl: "Download sertifikadu",
+      copy: "Kopia", copied: "Kopia tiha"
+    }
+  };
+
+  var ROLES = {
+    en: ["IT Officer", "Network Technician", "Hardware Specialist", "Web Developer"],
+    pt: ["Técnico de TI", "Técnico de Redes", "Especialista em Hardware", "Programador Web"],
+    id: ["Staf IT", "Teknisi Jaringan", "Spesialis Hardware", "Pengembang Web"],
+    tl: ["Ofisial TI", "Teknisiu Redi", "Espesialista Hardware", "Dezenvolvedór Web"]
+  };
+
+  var lang = "en";
+  try { var s = localStorage.getItem("site_lang"); if (s && T[s]) lang = s; } catch (e) {}
+
+  /* typing role line */
+  var roleEl = document.getElementById("typed-role");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timer = null, ri = 0, ci = 0, del = true;
+  function tick() {
+    var words = ROLES[lang]; var w = words[ri % words.length];
+    if (del) { ci--; } else { ci++; }
+    roleEl.textContent = w.substring(0, Math.max(ci, 0));
+    var d = del ? 40 : 85;
+    if (!del && ci >= w.length) { d = 1600; del = true; }
+    else if (del && ci <= 0) { del = false; ri = (ri + 1) % words.length; d = 280; }
+    timer = setTimeout(tick, d);
+  }
+  function startRole() {
+    if (timer) clearTimeout(timer);
+    ri = 0; roleEl.textContent = ROLES[lang][0];
+    if (reduce) return;
+    ci = ROLES[lang][0].length; del = true;
+    timer = setTimeout(tick, 2000);
+  }
+
+  function apply(l) {
+    lang = l;
+    var dict = T[l];
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var k = el.getAttribute("data-i18n");
+      if (dict[k] !== undefined) el.textContent = dict[k];
+    });
+    document.querySelectorAll("#langs button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-lang") === l ? "true" : "false");
+    });
+    document.documentElement.setAttribute("lang", l);
+    try { localStorage.setItem("site_lang", l); } catch (e) {}
+    startRole();
+  }
+  document.querySelectorAll("#langs button").forEach(function (b) {
+    b.addEventListener("click", function () { apply(b.getAttribute("data-lang")); });
+  });
+
+  /* smooth nav + scrollspy */
+  var links = Array.prototype.slice.call(document.querySelectorAll("#nav a"));
+  links.forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      var t = document.getElementById(a.getAttribute("href").slice(1));
+      if (t) t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    });
+  });
+  var ids = links.map(function (a) { return a.getAttribute("href").slice(1); });
+  function spy() {
+    var cur = ids[0];
+    ids.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 140) cur = id;
+    });
+    links.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + cur); });
+  }
+  window.addEventListener("scroll", spy, { passive: true });
+  document.querySelectorAll("section[id]").forEach(function (s) { s.style.scrollMarginTop = "110px"; });
+
+  /* copy buttons */
+  document.querySelectorAll(".cp").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var src = document.getElementById(btn.getAttribute("data-copy"));
+      var label = btn.querySelector("span");
+      function done() {
+        label.textContent = T[lang].copied;
+        setTimeout(function () { label.textContent = T[lang].copy; }, 1400);
+      }
+      function fallback() {
+        try {
+          var r = document.createRange(); r.selectNodeContents(src);
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        } catch (e) {}
+      }
+      try {
+        navigator.clipboard.writeText(src.textContent.trim()).then(done, fallback);
+      } catch (e) { fallback(); }
+    });
+  });
+
+  apply(lang);
+  spy();
+})();
+</script>
+
+</body></html>
